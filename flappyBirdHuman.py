@@ -38,11 +38,15 @@ def main():
   run = True
   while run:
     clock.tick(30)
-    # bird.move()
+    bird.move()
 
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
         run = False
+      
+      if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_UP:
+          bird.jump()
     
     add_pipe = False
     remove = []

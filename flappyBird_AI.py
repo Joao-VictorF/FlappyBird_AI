@@ -3,9 +3,9 @@ import neat
 import time
 import os
 
-from Bird import Bird
-from Pipe import Pipe
-from Base import Base
+from gameClasses.Bird import Bird
+from gameClasses.Pipe import Pipe
+from gameClasses.Base import Base
 
 pygame.font.init()
 # Constants

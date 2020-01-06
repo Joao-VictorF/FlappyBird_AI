@@ -1,19 +1,39 @@
 import pygame
 import os
 
-BIRD_IMGS = [
-  pygame.transform.scale2x(pygame.image.load(os.path.join("images", "bird1.png"))),
-  pygame.transform.scale2x(pygame.image.load(os.path.join("images", "bird2.png"))),
-  pygame.transform.scale2x(pygame.image.load(os.path.join("images", "bird3.png")))
+YELLOW_BIRD_IMGS = [
+  pygame.transform.scale2x(pygame.image.load(os.path.join("images/yellowBird", "bird1.png"))),
+  pygame.transform.scale2x(pygame.image.load(os.path.join("images/yellowBird", "bird2.png"))),
+  pygame.transform.scale2x(pygame.image.load(os.path.join("images/yellowBird", "bird3.png")))
 ]
 
-class Bird:
-  IMGS = BIRD_IMGS
+BLUE_BIRD_IMGS = [
+  pygame.transform.scale2x(pygame.image.load(os.path.join("images/blueBird", "bird1.png"))),
+  pygame.transform.scale2x(pygame.image.load(os.path.join("images/blueBird", "bird2.png"))),
+  pygame.transform.scale2x(pygame.image.load(os.path.join("images/blueBird", "bird3.png")))
+]
+
+RED_BIRD_IMGS = [
+  pygame.transform.scale2x(pygame.image.load(os.path.join("images/redBird", "bird1.png"))),
+  pygame.transform.scale2x(pygame.image.load(os.path.join("images/redBird", "bird2.png"))),
+  pygame.transform.scale2x(pygame.image.load(os.path.join("images/redBird", "bird3.png")))
+]
+
+
+class Bird():
+  IMGS = []
   MAX_ROTATION = 25
   ROTATION_VELOCITY = 20
   ANIMATION_TIME = 5
 
-  def __init__(self, x, y):
+  def __init__(self, x, y, collorBird):
+    global BLUE_BIRD_IMGS, RED_BIRD_IMGS, YELLOW_BIRD_IMGS
+    if collorBird == 0:
+      self.IMGS = BLUE_BIRD_IMGS
+    elif collorBird == 1:
+      self.IMGS = RED_BIRD_IMGS
+    elif collorBird == 2:
+      self.IMGS = YELLOW_BIRD_IMGS
     self.x = x
     self.y = y
     self.tilt = 0 # how much the image will tilt 

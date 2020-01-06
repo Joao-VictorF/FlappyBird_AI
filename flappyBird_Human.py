@@ -1,5 +1,4 @@
 import pygame
-import neat
 import time
 import os
 
@@ -15,22 +14,23 @@ WIN_HEIGHT = 800
 
 BG_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("images", "bg.png")))
 
-STAT_FONT =  pygame.font.SysFont("comicsans", 50)
+STAT_FONT =  pygame.font.SysFont("comicsans", 80)
 
 def draw_window(window, bird, pipes, base, score):
   window.blit(BG_IMG, (0, 0))
   for pipe in pipes:
     pipe.draw(window)
 
-  text = STAT_FONT.render("Score: " + str(score), 1, (255, 255, 255))
-  window.blit(text, (WIN_WIDTH - 10 - text.get_width(), 10))
+  text = STAT_FONT.render(str(score), 1, (255, 255, 255))
+  window.blit(text, (int(WIN_WIDTH/2), 30))
   base.draw(window)
   bird.draw(window)
   pygame.display.update()
 
 def main():
   score = 0
-  bird = Bird(150, 250)
+  # bird = Bird(150, 250)
+  bird = Bird(230, 350)
   base = Base(620)
   pipes = [Pipe(600)]
   window = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
@@ -54,7 +54,7 @@ def main():
 
     for pipe in pipes:
       if pipe.collide(bird):
-        pass
+        print("kkk pego no cano")
 
       if pipe.x + pipe.PIPE_TOP.get_width() < 0:
         remove.append(pipe)
@@ -72,8 +72,9 @@ def main():
       score += 1
       pipes.append(Pipe(600))
     
-    if bird.y + bird.img.get_height() >=620:
-      pass
+    if bird.y + bird.img.get_height() >=620: #bird hit the ground
+      print("pego no chao")
+      # pass
 
     base.move()
     draw_window(window, bird, pipes, base, score)

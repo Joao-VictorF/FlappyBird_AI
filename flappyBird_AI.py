@@ -3,7 +3,6 @@ import neat
 import time
 import os
 
-from random import randint
 from gameClasses.Bird import Bird
 from gameClasses.Pipe import Pipe
 from gameClasses.Base import Base
@@ -13,7 +12,8 @@ pygame.font.init()
 WIN_WIDTH = 500
 WIN_HEIGHT = 800
 generations = 0
-DRAW_LINES = True
+# DRAW_LINES = True  # if this variable is true lines will appear between the bird and the nearest pipe!
+DRAW_LINES = False
 
 pygame.display.set_caption('Flappy Bird AI')
 
@@ -56,7 +56,6 @@ def draw_window(window, birds, pipes, base, score, gen, pipe_ind):
   pygame.display.update()
 
 def main(genomes, config):
-  print('1')
 
   global generations
 
@@ -73,18 +72,17 @@ def main(genomes, config):
   clock = pygame.time.Clock()
   run = True
 
-  birdCollor = (randint(0, 2))
 
   for genome_id, genome in genomes: # the genome_id, its because genomes are a turple (id, obj)
     genome.fitness = 0
     net = neat.nn.FeedForwardNetwork.create(genome, config)
     nets.append(net)
-    birds.append(Bird(230, 350, birdCollor))
+    birds.append(Bird(230, 350))
     ge.append(genome)
 
 
   while run and len(birds) > 0:
-    clock.tick(30)
+    clock.tick(40)
 
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
@@ -119,10 +117,12 @@ def main(genomes, config):
       for bird in birds:
         # check for collision
         if pipe.collide(bird):
-          ge[birds.index(bird)].fitness -= 1
-          nets.pop(birds.index(bird))
-          ge.pop(birds.index(bird))
-          birds.pop(birds.index(bird))
+          bird.birdCollide = True
+          if bird.y + bird.img.get_height() -10 >= 620 or bird.y < -50: #bird hit the ground
+            ge[birds.index(bird)].fitness -= 1
+            nets.pop(birds.index(bird))
+            ge.pop(birds.index(bird))
+            birds.pop(birds.index(bird))
 
       if pipe.x + pipe.PIPE_TOP.get_width() < 0:
         remove.append(pipe)
@@ -149,7 +149,6 @@ def main(genomes, config):
 
     draw_window(window, birds, pipes, base, score, generations, pipe_ind)
 
-
 def run(config_file):
   config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
   neat.DefaultSpeciesSet, neat.DefaultStagnation, config_file)
@@ -161,7 +160,7 @@ def run(config_file):
   population.add_reporter(stats)
   #calling the main function 50 times
   winner = population.run(main, 50) 
-  # print('\nBest bird:\n{!s}'.format(winner))
+  print('\nBest bird:\n{!s}'.format(winner))
 
 if __name__ == '__main__':
   local_dir = os.path.dirname(__file__)

@@ -1,6 +1,6 @@
 import pygame
 import os
-
+from random import randint
 YELLOW_BIRD_IMGS = [
   pygame.transform.scale2x(pygame.image.load(os.path.join("images/yellowBird", "bird1.png"))),
   pygame.transform.scale2x(pygame.image.load(os.path.join("images/yellowBird", "bird2.png"))),
@@ -25,8 +25,11 @@ class Bird():
   MAX_ROTATION = 25
   ROTATION_VELOCITY = 20
   ANIMATION_TIME = 5
+  birdCollide = False
 
-  def __init__(self, x, y, collorBird):
+
+  def __init__(self, x, y):
+    collorBird = (randint(0, 2))
     global BLUE_BIRD_IMGS, RED_BIRD_IMGS, YELLOW_BIRD_IMGS
     if collorBird == 0:
       self.IMGS = BLUE_BIRD_IMGS
@@ -49,6 +52,9 @@ class Bird():
     self.height = self.y
 
   def move(self):
+    if self.birdCollide:
+      self.moveDown()
+
     self.tick_count += 1
 
     # This does is tells us based on our current Birds velocity how much we're moving up or how much we're moving down
@@ -69,6 +75,13 @@ class Bird():
     else:
       if self.tilt > -90:
         self.tilt -= self.ROTATION_VELOCITY
+
+  def moveDown(self):
+    self.x -= 7
+    if self.y >= 620 or self.y < -50:
+      pass
+    else:
+      self.y += 25
 
   def draw(self, window):
     self.img_num += 1

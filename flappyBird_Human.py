@@ -29,13 +29,12 @@ def draw_window(window, bird, pipes, base, score):
 
 def main():
   score = 0
-  # bird = Bird(150, 250)
   bird = Bird(230, 350)
   base = Base(620)
   pipes = [Pipe(600)]
   window = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
   clock = pygame.time.Clock()
-  pygame.display.set_caption('Flappy Bird AI')
+  pygame.display.set_caption('Flappy Bird')
   run = True
   while run:
     clock.tick(30)

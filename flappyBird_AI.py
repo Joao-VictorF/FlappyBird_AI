@@ -14,6 +14,9 @@ WIN_HEIGHT = 800
 generations = 0
 # DRAW_LINES = True  # if this variable is true lines will appear between the bird and the nearest pipe!
 DRAW_LINES = False
+MOVE_PIPES = True
+SHOW_PIRANHA = True
+
 
 pygame.display.set_caption('Flappy Bird AI')
 
@@ -34,11 +37,22 @@ def draw_window(window, birds, pipes, base, score, gen, pipe_ind):
     # draw lines from bird to pipe
     if DRAW_LINES:
       try:
-        pygame.draw.line(window, (255, 0, 0), (bird.x + bird.img.get_width()/2, bird.y + bird.img.get_height()/2), (pipes[pipe_ind].x + pipes[pipe_ind].PIPE_TOP.get_width()/2, pipes[pipe_ind].height), 5)
-        pygame.draw.line(window, (255, 0, 0), (bird.x + bird.img.get_width()/2, bird.y + bird.img.get_height()/2), (pipes[pipe_ind].x + pipes[pipe_ind].PIPE_BOTTOM.get_width()/2, pipes[pipe_ind].bottom), 5)
+        pygame.draw.line(
+          window,
+          (255, 0, 0),
+          (bird.x + bird.img.get_width()/2, bird.y + bird.img.get_height()/2),
+          (pipes[pipe_ind].x + pipes[pipe_ind].PIPE_TOP.get_width()/2, pipes[pipe_ind].height),
+          2
+        )
+        pygame.draw.line(
+          window,
+          (255, 0, 0),
+          (bird.x + bird.img.get_width()/2, bird.y + bird.img.get_height()/2),
+          (pipes[pipe_ind].x + pipes[pipe_ind].PIPE_BOTTOM.get_width()/2, pipes[pipe_ind].bottom),
+          2
+        )
       except:
         pass
-    # draw bird
     bird.draw(window)
   
   # score
@@ -46,14 +60,15 @@ def draw_window(window, birds, pipes, base, score, gen, pipe_ind):
   window.blit(score_label, (int(WIN_WIDTH/2), 30))
 
   # generation
-  score_label = END_FONT.render("Gens: " + str(gen-1), 1, (255, 255, 255))
+  score_label = END_FONT.render("Gerações: " + str(gen-1), 1, (255, 255, 255))
   window.blit(score_label, (10, 10))
 
   # how many birds are alive
-  score_label = END_FONT.render("Alive: " + str(len(birds)), 1, (255, 255, 255))
+  score_label = END_FONT.render("Vivos: " + str(len(birds)), 1, (255, 255, 255))
   window.blit(score_label, (10, 50))
 
   pygame.display.update()
+
 
 def main(genomes, config):
 
@@ -63,10 +78,11 @@ def main(genomes, config):
   nets = []
   ge = []
   birds = []
+  PIXELS_RUNNED_TO_SHOW_PIRANHA = 0
 
   score = 0
   base = Base(620)
-  pipes = [Pipe(600)]
+  pipes = [Pipe(600, MOVE_PIPES, False)]
   
   window = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
   clock = pygame.time.Clock()
@@ -82,7 +98,7 @@ def main(genomes, config):
 
 
   while run and len(birds) > 0:
-    clock.tick(40)
+    clock.tick(100)
 
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
@@ -113,9 +129,16 @@ def main(genomes, config):
 
     for pipe in pipes:
       pipe.move()
-
       for bird in birds:
         # check for collision
+
+        if pipe.fireball.collide(pipe.fireball, bird):
+          bird.birdCollide = True
+          ge[birds.index(bird)].fitness -= 1
+          nets.pop(birds.index(bird))
+          ge.pop(birds.index(bird))
+          birds.pop(birds.index(bird))
+
         if pipe.collide(bird):
           bird.birdCollide = True
           if bird.y + bird.img.get_height() -10 >= 620 or bird.y < -50: #bird hit the ground
@@ -135,7 +158,13 @@ def main(genomes, config):
       score += 1
       for g in ge:
         g.fitness += 5
-      pipes.append(Pipe(600))
+      if PIXELS_RUNNED_TO_SHOW_PIRANHA >= 50:   
+        pipes.append(Pipe(600, MOVE_PIPES, True))
+        PIXELS_RUNNED_TO_SHOW_PIRANHA = 0
+      else:
+        pipes.append(Pipe(600, MOVE_PIPES, False))
+
+    PIXELS_RUNNED_TO_SHOW_PIRANHA += 1
 
     for r in remove:
       pipes.remove(r)
@@ -148,7 +177,6 @@ def main(genomes, config):
         birds.pop(birds.index(bird))
 
     draw_window(window, birds, pipes, base, score, generations, pipe_ind)
-
 def run(config_file):
   config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
   neat.DefaultSpeciesSet, neat.DefaultStagnation, config_file)
@@ -159,7 +187,7 @@ def run(config_file):
   stats = neat.StatisticsReporter()
   population.add_reporter(stats)
   #calling the main function 50 times
-  winner = population.run(main, 50) 
+  winner = population.run(main, 100) 
   print('\nBest bird:\n{!s}'.format(winner))
 
 if __name__ == '__main__':

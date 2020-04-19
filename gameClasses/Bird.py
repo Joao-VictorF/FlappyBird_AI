@@ -1,6 +1,7 @@
 import pygame
 import os
 from random import randint
+
 YELLOW_BIRD_IMGS = [
   pygame.transform.scale2x(pygame.image.load(os.path.join("images/yellowBird", "bird1.png"))),
   pygame.transform.scale2x(pygame.image.load(os.path.join("images/yellowBird", "bird2.png"))),
@@ -20,15 +21,15 @@ RED_BIRD_IMGS = [
 ]
 
 
-class Bird():
+class Bird(pygame.sprite.Sprite):
   IMGS = []
   MAX_ROTATION = 25
   ROTATION_VELOCITY = 20
   ANIMATION_TIME = 5
   birdCollide = False
 
-
   def __init__(self, x, y):
+    pygame.sprite.Sprite.__init__(self)
     collorBird = (randint(0, 2))
     global BLUE_BIRD_IMGS, RED_BIRD_IMGS, YELLOW_BIRD_IMGS
     if collorBird == 0:
@@ -45,6 +46,8 @@ class Bird():
     self.height = self.y
     self.img_num = 0
     self.img = self.IMGS[0]
+    self.rect = self.img.get_rect()
+    self.countdown_shield = 0
 
   def jump(self):
     self.vel = -10.5
@@ -87,14 +90,23 @@ class Bird():
     self.img_num += 1
     if self.img_num < self.ANIMATION_TIME:
       self.img = self.IMGS[0]
+      self.rect = self.img.get_rect()
+    
     elif self.img_num < self.ANIMATION_TIME*2:
       self.img = self.IMGS[1]
+      self.rect = self.img.get_rect()
+    
     elif self.img_num < self.ANIMATION_TIME*3:
       self.img = self.IMGS[2]
+      self.rect = self.img.get_rect()
+    
     elif self.img_num < self.ANIMATION_TIME*4:
       self.img = self.IMGS[1]
+      self.rect = self.img.get_rect()
+    
     elif self.img_num == self.ANIMATION_TIME*4 + 1:
       self.img = self.IMGS[0]
+      self.rect = self.img.get_rect()
       self.img_num = 0
     
     if self.tilt <= -80:

@@ -10,3 +10,5 @@ and use the UP key to move the bird.
 
 
 * Remember to install the pygame and neat libraries.
+
+[![Run on Repl.it](https://repl.it/badge/github/Juaozim/FlappyBird_AI)](https://repl.it/github/Juaozim/FlappyBird_AI)
